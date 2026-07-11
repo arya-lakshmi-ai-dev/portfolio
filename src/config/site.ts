@@ -69,8 +69,8 @@ export const site = {
   location: "India",
   email: "aryalakshmi.dev@gmail.com",
 
-  /* Used for <title>, meta tags, OG. Replace with your real domain later. */
-  url: "https://aryalakshmi.dev", // TODO: your deployed domain
+  /* Used for <title>, meta tags, OG. */
+  url: "https://www.aryalakshmi.tech",
   description:
     "AI Engineer & Full-Stack Developer building end-to-end GenAI systems — LLM pipelines, agent workflows, and RAG-based knowledge systems.",
 
@@ -236,9 +236,9 @@ export const site = {
 
   /* ── Social / contact links ───────────────────────────────────────────── */
   socials: [
-    { label: "GitHub", href: "https://github.com/your-username", icon: "github" }, // TODO
-    { label: "LinkedIn", href: "https://linkedin.com/in/your-handle", icon: "linkedin" }, // TODO
-    { label: "Medium", href: "https://medium.com/@your-handle", icon: "medium" }, // TODO
+    { label: "GitHub", href: "https://github.com/22CB006", icon: "github" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/aryalakshmi/", icon: "linkedin" },
+    { label: "Medium", href: "https://medium.com/@your-handle", icon: "medium" }, // TODO: your Medium profile
     { label: "Email", href: "mailto:aryalakshmi.dev@gmail.com", icon: "mail" },
   ] satisfies SocialLink[],
 };
