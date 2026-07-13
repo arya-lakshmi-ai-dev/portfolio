@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 
 import { buildSystemPrompt } from "@/lib/ai/persona";
+import { fallbackAnswer } from "@/lib/ai/fallback";
 import {
   hasApiKey,
   streamChat,
@@ -61,13 +62,12 @@ export async function POST(req: NextRequest) {
       content: m.content.slice(0, MAX_CHARS),
     }));
 
-  // Graceful local/dev experience: render the widget without a key.
+  const lastUserMessage =
+    [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
+
+  // No key configured → answer from the offline knowledge base.
   if (!hasApiKey()) {
-    return textStream(
-      `👋 Hi! I'm ${site.shortName}'s AI assistant. I'm not connected to a model yet — ` +
-        `add a free GEMINI_API_KEY (aistudio.google.com/apikey) to .env.local and restart. ` +
-        `Once connected, ask me anything about ${site.shortName}'s skills, projects, or experience!`
-    );
+    return textStream(fallbackAnswer(lastUserMessage));
   }
 
   const system = buildSystemPrompt();
@@ -75,18 +75,23 @@ export async function POST(req: NextRequest) {
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const encoder = new TextEncoder();
+      let sentAnything = false;
       try {
         for await (const chunk of streamChat(system, messages)) {
+          sentAnything = true;
           controller.enqueue(encoder.encode(chunk));
         }
       } catch (err) {
-        console.error("[api/chat] stream error:", err);
-        controller.enqueue(
-          encoder.encode(
-            "\n\n⚠️ Sorry — I hit an error reaching the model. Please try again in a moment, " +
-              `or email ${site.email}.`
-          )
-        );
+        // Quota exhausted / provider outage → fall back to offline answers so
+        // the assistant keeps working until the key is refreshed.
+        console.error("[api/chat] stream error, using fallback:", err);
+        if (!sentAnything) {
+          controller.enqueue(encoder.encode(fallbackAnswer(lastUserMessage)));
+        } else {
+          controller.enqueue(
+            encoder.encode(`\n\n(connection dropped — email ${site.email} for more)`)
+          );
+        }
       } finally {
         controller.close();
       }

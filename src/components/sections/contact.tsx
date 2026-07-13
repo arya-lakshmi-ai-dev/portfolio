@@ -5,6 +5,7 @@ import { Reveal } from "@/components/motion/reveal";
 import { TextReveal } from "@/components/effects/text-reveal";
 import { Magnetic } from "@/components/effects/magnetic";
 import { Marquee } from "@/components/effects/marquee";
+import { ContactForm } from "@/components/sections/contact-form";
 import { site } from "@/config/site";
 
 const MARQUEE = ["Let's build something", "Open to work", "AI Engineering", "Say hello"];
@@ -59,6 +60,25 @@ export function Contact() {
             </span>
           </a>
         </Magnetic>
+      </Reveal>
+
+      {/* Start a conversation — form */}
+      <Reveal delay={0.2} className="mt-16">
+        <div className="grid gap-10 rounded-2xl border border-border bg-card p-8 sm:p-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+          <div className="flex flex-col gap-3">
+            <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-primary">
+              Start a conversation ↴
+            </span>
+            <p className="font-display text-2xl font-light leading-snug sm:text-3xl">
+              Have a role, a project, or just a question?
+            </p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Drop a note — it lands straight in my inbox and I usually reply
+              within a day.
+            </p>
+          </div>
+          <ContactForm />
+        </div>
       </Reveal>
 
       {/* links row */}

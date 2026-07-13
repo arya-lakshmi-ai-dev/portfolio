@@ -20,8 +20,6 @@ export type Project = {
   tagline: string;
   description: string;
   tech: string[];
-  /** Path under /public or an absolute URL. */
-  image: string;
   liveUrl?: string;
   repoUrl?: string;
   /** Shows a small "Live" / "Case study" pill on the card. */
@@ -83,8 +81,6 @@ export const site = {
       "I build end-to-end GenAI systems — LLM pipelines, agent workflows, and RAG-based knowledge products — and ship them as scalable, production-ready full-stack apps.",
     // Small status pill in the hero. Set to null to hide.
     availability: "Open to AI Engineering roles",
-    // Circular headshot. Drop your photo at public/avatar.jpg and update this.
-    avatar: "/avatar.svg", // TODO: replace with /avatar.jpg
     // Path to your résumé PDF (place it in /public). Set to null to hide the button.
     resumeUrl: "/resume.pdf", // TODO: drop your resume PDF in /public
   },
@@ -140,7 +136,6 @@ export const site = {
       description:
         "An AI-powered creative assistant built on the PERN stack, integrated with OpenAI and ClipDrop APIs for generating articles, titles, and images. Features dynamic content generation, image editing, and subscription-based access.",
       tech: ["React.js", "Node.js", "Express.js", "PostgreSQL (Neon)", "OpenAI API", "ClipDrop", "Vercel"],
-      image: "/projects/quick-ai.svg?v=2",
       liveUrl: "#", // TODO: live demo URL
       repoUrl: "#", // TODO: GitHub repo URL
       badge: "Live",
@@ -152,7 +147,6 @@ export const site = {
       description:
         "A production-grade knowledge assistant that lets users query PDFs, documents, and web content via advanced Retrieval-Augmented Generation. Implements semantic search, reranking, citation-based answers, and hallucination control for accurate responses.",
       tech: ["FastAPI", "LangChain", "FAISS", "Sentence Transformers", "Llama / OpenAI"],
-      image: "/projects/knowledge-copilot.svg?v=2",
       repoUrl: "#", // TODO: GitHub repo URL
       badge: "RAG",
       featured: true,
@@ -163,7 +157,6 @@ export const site = {
       description:
         "A multi-agent AI system that simulates a startup team — coordinating Product, Engineering, and Market Research agents to analyze ideas and produce structured business outputs. Enables parallel task execution, role-based reasoning, and agent collaboration.",
       tech: ["Python", "CrewAI", "LangChain", "FastAPI", "OpenAI"],
-      image: "/projects/agent-simulator.svg?v=2",
       repoUrl: "#", // TODO: GitHub repo URL
       badge: "Agents",
       featured: true,
@@ -178,10 +171,12 @@ export const site = {
       period: "Apr 2026 — Present",
       location: "Bournemouth, England, UK · Remote",
       points: [
-        "Building LLM-powered agent workflows and RAG features for a production AI assistant.",
-        "Focused on prompt engineering, tool/function calling, and output validation for reliable AI responses.",
+        "Ship production features for Jay, JMI's AI moving assistant — a Pydantic AI multi-agent system (FastAPI, Redis, Supabase/pgvector RAG) serving real customers over web chat and WhatsApp.",
+        "Built safety and trust systems around the agent: AI scope guardrails across every channel prompt, and GDPR breach alerting with a 4-hour SLA.",
+        "Automated Voice-of-Customer reporting — weekly digests with CSAT scoring and failure analysis generated from real conversation transcripts.",
+        "Own quality end-to-end: LLM-judge evaluation suites, Logfire observability dashboards for latency and answer quality, and fully-mocked TDD test suites.",
       ],
-      stack: ["Pydantic AI", "MCP", "Python", "FastAPI", "RAG", "LLMs"],
+      stack: ["Pydantic AI", "Python", "FastAPI", "RAG", "MCP", "Redis", "Logfire"],
     },
     {
       role: "Software Engineer Intern",

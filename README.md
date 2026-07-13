@@ -1,78 +1,64 @@
-# Arya Lakshmi M — Portfolio
+# aryalakshmi.tech
 
-A minimal, professional portfolio for **Arya Lakshmi M — AI Engineer & Full-Stack Developer**, featuring a unique **"Ask My AI"** assistant grounded in the real profile.
+Personal portfolio of **Arya Lakshmi M — AI Engineer & Full-Stack Developer**.
 
-Built with **Next.js 15 (App Router) · TypeScript · Tailwind CSS · shadcn/ui · Framer Motion**.
+**Live:** https://www.aryalakshmi.tech
 
-## ✨ Highlights
+Built with **Next.js 15 (App Router) · TypeScript · Tailwind CSS · Framer Motion**, in a
+warm editorial style (porcelain + deep plum, Fraunces display serif) — with an AI
+assistant woven through the whole site.
 
-- **Light / Dark** theme (system-aware) with a modern cyan-azure accent.
-- **"Ask My AI"** — a streaming chat agent that answers questions about Arya, grounded in her profile (RAG-style context grounding). Provider-abstracted; runs on the **free Google Gemini tier**.
-- **Single source of truth for content:** edit [`src/config/site.ts`](src/config/site.ts) — every section, link, project and the AI agent's knowledge update from that one file.
-- Accessible, responsive, SEO/OpenGraph tags, reduced-motion aware.
+## ✨ What makes it different
 
-## 🚀 Getting started
+- **Hero terminal** — a live `arya@portfolio — ai` shell that auto-plays a typed Q&A
+  demo, then answers *your* question for real when you type at the prompt.
+- **"Ask my AI" chatbot** — a floating assistant grounded in the same profile content
+  that renders the page, so it never drifts out of sync. Powered by Google Gemini
+  (free tier) behind a provider-agnostic streaming layer.
+- **Editorial motion** — scroll-progress bar, word-by-word headline reveals, stacking
+  project cards, a self-drawing experience timeline, magnetic buttons, and a custom
+  robot cursor.
+
+## 🚀 Run locally
 
 ```bash
 npm install
-npm run dev
+npm run dev        # http://localhost:3000
 ```
 
-Open http://localhost:3000.
+The site works without any API key — the AI simply shows a setup note. To enable real
+answers: copy `.env.example` to `.env.local`, add a free `GEMINI_API_KEY` from
+https://aistudio.google.com/apikey, and restart.
 
-The site runs fully **without** an API key — the chat widget shows a friendly setup message until you connect one.
+## ✏️ Editing content
 
-### Enable the AI assistant (optional, free)
+Everything lives in **[`src/config/site.ts`](src/config/site.ts)** — identity, about,
+skills, projects, experience, socials. The AI assistant's knowledge is built from the
+same file (`src/lib/ai/persona.ts`), so editing it updates both the page and the bot.
 
-1. Get a free key at https://aistudio.google.com/apikey (no credit card).
-2. `cp .env.example .env.local` and paste your key into `GEMINI_API_KEY`.
-3. Restart `npm run dev`.
+Drop your résumé at `public/resume.pdf` (the hero button links to it).
 
-## ✏️ Editing your content
-
-Everything lives in **[`src/config/site.ts`](src/config/site.ts)** — name, role, tagline, about, skills,
-projects, experience, education, certifications, and social links. Look for `TODO:` markers:
-
-- Replace social URLs (GitHub, LinkedIn, Medium).
-- Add project live/repo links.
-- Drop your photo at `public/avatar.jpg` and point `hero.avatar` to it.
-- Drop your résumé at `public/resume.pdf`.
-- Replace the placeholder project images in `public/projects/`.
-
-The **AI agent auto-syncs** with this file — no separate knowledge base to maintain.
-
-## 📁 Project structure
+## 📁 Structure
 
 ```
 src/
 ├── app/
-│   ├── api/chat/route.ts      # Streaming endpoint for the AI agent
-│   ├── layout.tsx             # Fonts, theme provider, metadata
-│   ├── page.tsx               # Section composition
-│   └── globals.css            # Theme tokens (accent lives here)
+│   ├── api/chat/route.ts        # Streaming chat endpoint (Gemini, SSE→text)
+│   ├── icon.svg                 # Robot favicon
+│   ├── opengraph-image.tsx      # Social-preview card (next/og)
+│   ├── layout.tsx · page.tsx · globals.css
 ├── components/
-│   ├── ui/                    # shadcn/ui primitives (button, badge, card)
-│   ├── layout/                # site-header, site-footer
-│   ├── sections/              # hero, about, skills, projects, …
-│   ├── chat/ask-ai.tsx        # "Ask My AI" floating widget
-│   ├── motion/reveal.tsx      # Scroll-reveal animation helper
-│   └── …                      # section-heading, social-links, theme-toggle, icons
-├── config/site.ts             # ← ALL content
-└── lib/
-    ├── utils.ts               # cn() helper
-    └── ai/                    # persona (system prompt) + provider (Gemini)
+│   ├── sections/                # hero (terminal), about, skills, projects, experience, contact, marquee-strip
+│   ├── chat/ask-ai.tsx          # Floating chatbot widget
+│   ├── effects/                 # marquee, magnetic, scroll-progress, text-reveal
+│   ├── layout/                  # header (pill nav), footer
+│   └── ui/                      # button, badge, card primitives
+├── config/site.ts               # ← ALL content
+└── lib/ai/                      # persona (system prompt) + provider (Gemini streaming)
 ```
 
-## ☁️ Deploy to Vercel
+## ☁️ Deploy
 
-1. Push this folder to a GitHub repo.
-2. Import it at [vercel.com/new](https://vercel.com/new).
-3. Add the `GEMINI_API_KEY` environment variable in the project settings.
-4. Deploy. Update `site.url` in `src/config/site.ts` to your final domain.
-
-## 🔁 Swapping the AI provider
-
-Specific model IDs get deprecated over time, so the LLM call is isolated in
-[`src/lib/ai/provider.ts`](src/lib/ai/provider.ts). To change model, set `GEMINI_MODEL`
-in your env. To change vendor entirely (OpenAI, Groq, Anthropic…), reimplement the
-single `streamChat()` function — nothing else in the app touches the model.
+Deployed on **Vercel** — every push to `main` auto-deploys. Set `GEMINI_API_KEY` in
+Project → Settings → Environment Variables. Model/vendor can be swapped in one place:
+`src/lib/ai/provider.ts` (or via the `GEMINI_MODEL` env var).
