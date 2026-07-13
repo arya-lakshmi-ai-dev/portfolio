@@ -79,7 +79,7 @@ export function ContactForm() {
             required
             value={form.name}
             onChange={(e) => set("name", e.target.value)}
-            placeholder="Jane Doe"
+            placeholder="What should I call you?"
             className={inputCls}
           />
         </label>
@@ -92,7 +92,7 @@ export function ContactForm() {
             type="email"
             value={form.email}
             onChange={(e) => set("email", e.target.value)}
-            placeholder="jane@company.com"
+            placeholder="you@example.com"
             className={inputCls}
           />
         </label>
@@ -107,7 +107,7 @@ export function ContactForm() {
           rows={4}
           value={form.message}
           onChange={(e) => set("message", e.target.value)}
-          placeholder="A role, a project, a question — anything."
+          placeholder="Tell me about a role, a collaboration, or just say hi…"
           className={`${inputCls} resize-none`}
         />
       </label>
