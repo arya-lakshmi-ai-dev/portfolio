@@ -26,6 +26,10 @@ export function hasApiKey(): boolean {
   return Boolean(process.env.GEMINI_API_KEY);
 }
 
+export function hasGroqKey(): boolean {
+  return Boolean(process.env.GROQ_API_KEY);
+}
+
 /**
  * Streams the model's reply as plain-text chunks (an async iterable of strings).
  * Uses Gemini's SSE endpoint directly via fetch — zero SDK dependencies.
@@ -88,6 +92,70 @@ export async function* streamChat(
         if (text) yield text;
       } catch {
         // Partial JSON across chunks — safe to skip; next read completes it.
+      }
+    }
+  }
+}
+
+/* ── Second free tier: Groq (Llama, OpenAI-compatible) ─────────────────────
+   Used only when Gemini fails (quota exhausted / outage) AND GROQ_API_KEY is
+   set. Free key: https://console.groq.com  → API Keys. */
+
+const GROQ_MODEL = process.env.GROQ_MODEL ?? "llama-3.3-70b-versatile";
+
+export async function* streamChatGroq(
+  system: string,
+  messages: ChatMessage[]
+): AsyncGenerator<string> {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) throw new MissingApiKeyError();
+
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: GROQ_MODEL,
+      stream: true,
+      temperature: 0.4,
+      max_tokens: 800,
+      messages: [
+        { role: "system", content: system },
+        ...messages.map((m) => ({ role: m.role, content: m.content })),
+      ],
+    }),
+  });
+
+  if (!res.ok || !res.body) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`Groq request failed (${res.status}): ${detail.slice(0, 300)}`);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("data:")) continue;
+      const json = trimmed.slice(5).trim();
+      if (!json || json === "[DONE]") continue;
+      try {
+        const parsed = JSON.parse(json);
+        const text: string | undefined = parsed?.choices?.[0]?.delta?.content;
+        if (text) yield text;
+      } catch {
+        // Partial JSON across chunks — skip.
       }
     }
   }

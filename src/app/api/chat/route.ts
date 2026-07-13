@@ -4,7 +4,9 @@ import { buildSystemPrompt } from "@/lib/ai/persona";
 import { fallbackAnswer } from "@/lib/ai/fallback";
 import {
   hasApiKey,
+  hasGroqKey,
   streamChat,
+  streamChatGroq,
   type ChatMessage,
   type ChatRole,
 } from "@/lib/ai/provider";
@@ -72,25 +74,41 @@ export async function POST(req: NextRequest) {
 
   const system = buildSystemPrompt();
 
+  // Resilience chain: Gemini → Groq (if configured) → hardcoded answers.
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const encoder = new TextEncoder();
       let sentAnything = false;
-      try {
-        for await (const chunk of streamChat(system, messages)) {
+
+      const pipe = async (gen: AsyncGenerator<string>) => {
+        for await (const chunk of gen) {
           sentAnything = true;
           controller.enqueue(encoder.encode(chunk));
         }
+      };
+
+      try {
+        await pipe(streamChat(system, messages));
       } catch (err) {
-        // Quota exhausted / provider outage → fall back to offline answers so
-        // the assistant keeps working until the key is refreshed.
-        console.error("[api/chat] stream error, using fallback:", err);
-        if (!sentAnything) {
-          controller.enqueue(encoder.encode(fallbackAnswer(lastUserMessage)));
-        } else {
+        console.error("[api/chat] gemini failed:", err);
+        if (sentAnything) {
+          // Mid-stream drop — don't switch voices, just close politely.
           controller.enqueue(
             encoder.encode(`\n\n(connection dropped — email ${site.email} for more)`)
           );
+        } else {
+          // Tier 2: Groq, if a key is configured.
+          if (hasGroqKey()) {
+            try {
+              await pipe(streamChatGroq(system, messages));
+            } catch (err2) {
+              console.error("[api/chat] groq failed:", err2);
+            }
+          }
+          // Tier 3: offline keyword answers.
+          if (!sentAnything) {
+            controller.enqueue(encoder.encode(fallbackAnswer(lastUserMessage)));
+          }
         }
       } finally {
         controller.close();
