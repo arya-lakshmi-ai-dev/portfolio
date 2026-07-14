@@ -237,28 +237,31 @@ export const site = {
   faq: [
     {
       q: "What roles is Arya looking for / open to?",
-      a: "AI Engineer, GenAI Engineer, or Software Engineer (SDE) roles — ideally building LLM, agent, and RAG systems end to end. She's comfortable across the full stack (FastAPI + React).",
+      a: "She's primarily looking for AI / GenAI Engineer roles — building LLM, agent, and RAG systems end to end. With her full-stack background (FastAPI + React) she's also comfortable in broader software-engineering roles.",
     },
     {
-      q: "Is Arya available / open to new opportunities?",
-      a: "Yes, she is open to opportunities. She's completing her B.Tech (CSBS, graduating 2026) and is currently an AI Engineer Intern at Just Move In.",
-      // TODO: confirm — e.g. "available for full-time from July 2026"
+      q: "Is Arya available? When can she start / what's her notice period?",
+      a: "Yes — she's available for full-time roles and can start immediately (short notice).",
     },
     {
-      q: "What is her notice period / when can she start?",
-      a: "Please reach out by email to discuss start dates — she'll share specifics directly.", // TODO: replace with your real answer
-    },
-    {
-      q: "Is she open to remote work or relocation?",
-      a: "She currently works remotely and is open to remote roles. For relocation, please discuss directly by email.", // TODO: confirm relocation preference
+      q: "Does she work remotely? Is she open to relocation?",
+      a: "She's open to any work mode — remote, hybrid, or onsite — and is open to relocation globally, including internationally.",
     },
     {
       q: "What are Arya's key strengths?",
-      a: "Building production GenAI end to end — LLM pipelines, multi-agent workflows (CrewAI, LangGraph, MCP), and RAG with reranking and citations — plus a full-stack background to ship and deploy what she builds. She's a fast, ship-first learner.",
+      a: "Building production GenAI end to end — LLM pipelines, multi-agent workflows (CrewAI, LangGraph, MCP), and RAG with reranking and citations — plus the full-stack skills to ship and deploy what she builds. Fast, ship-first learner with high ownership.",
     },
     {
       q: "Why should we hire Arya?",
-      a: "She already ships real AI features in production at Just Move In (guardrails, GDPR alerting, evaluation suites, observability) while still an undergraduate — combining hands-on GenAI depth with full-stack delivery and a strong ship-first mindset.",
+      a: "She already ships production AI features at Just Move In while still an undergraduate — taking GenAI ideas from prompt to deployed product (LLM pipelines, agents, RAG) with the full-stack skills to ship them, a ship-first mindset, and high ownership across guardrails, evaluations, and observability.",
+    },
+    {
+      q: "What are her career goals / what does she want to build?",
+      a: "To work at the intersection of applied AI research and engineering — turning cutting-edge models into reliable, real-world products.",
+    },
+    {
+      q: "What kind of team or company is she looking for?",
+      a: "She's most excited by AI-first product teams — where GenAI is core to the product, not a bolt-on.",
     },
     {
       q: "What is she currently working on?",
@@ -269,12 +272,28 @@ export const site = {
       a: "Applied Generative AI: RAG systems (semantic search, reranking, citation-based answers) and agentic workflows, backed by Python/FastAPI and a solid full-stack foundation.",
     },
     {
+      q: "What is she currently learning / improving?",
+      a: "She's going deeper on model fine-tuning and evaluation — beyond prompt-engineering and RAG approaches.",
+    },
+    {
       q: "Does she have professional / production experience?",
       a: "Yes — production AI work at Just Move In, LLM agent workflows at Adya AI, and full-stack + WordPress development at unoiatech. See the Experience section for details.",
     },
     {
+      q: "What are her interests outside of core work?",
+      a: "She's active in hackathons, contributes to and builds open-source projects, and writes technical blogs on Medium.",
+    },
+    {
+      q: "What languages does she speak?",
+      a: "English (professional working proficiency) and Tamil (native).",
+    },
+    {
+      q: "What are her salary expectations?",
+      a: "Arya is happy to discuss compensation directly — please reach out by email.",
+    },
+    {
       q: "How can I contact Arya?",
-      a: `The best way is email (${"aryalakshmi.dev@gmail.com"}), or via LinkedIn. You can also use the contact form on this page.`,
+      a: "The best way is email (aryalakshmi.dev@gmail.com) or LinkedIn. You can also use the contact form on this page.",
     },
   ] satisfies FAQItem[],
 
