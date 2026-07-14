@@ -68,6 +68,11 @@ const RULES: Rule[] = [
       `You can download Arya's résumé using the Résumé button in the hero section at the top of this page.`,
   },
   {
+    keywords: ["available", "availability", "open to", "looking for", "notice period", "start", "join", "relocat", "remote", "hire", "why should", "strength", "role", "opportunit"],
+    answer: () =>
+      `Arya is open to AI Engineer / GenAI / SDE roles building LLM, agent, and RAG systems. She's completing her B.Tech (CSBS, 2026) and currently interning as an AI Engineer at Just Move In. For availability, start dates, or relocation specifics, please email ${site.email}.`,
+  },
+  {
     keywords: ["who", "about", "arya", "yourself", "introduce", "intro", "tell me about"],
     answer: () =>
       `Arya Lakshmi M is an AI Engineer & Full-Stack Developer who builds end-to-end GenAI systems — LLM pipelines, multi-agent workflows and RAG products. She's currently an AI Engineer Intern at Just Move In, shipping features for a production AI assistant. Ask me about her projects, skills, or experience!`,
@@ -79,10 +84,29 @@ const RULES: Rule[] = [
   },
 ];
 
+// Off-topic / non-professional requests → firm, formal redirect.
+const OFF_TOPIC = [
+  "joke", "funny", "laugh", "riddle", "poem", "story", "song", "sing",
+  "weather", "recipe", "cook", "game", "play", "movie", "sport", "news",
+  "translate", "code for", "write code", "debug", "solve", "math", "calculate",
+  "capital of", "who is the president", "opinion", "do you think", "roleplay",
+  "pretend", "act as", "ignore previous", "system prompt",
+];
+
+const REDIRECT = `I'm ${site.shortName}'s assistant — I can only answer questions about her work, skills, and experience. What would you like to know?`;
+
 export function fallbackAnswer(question: string): string {
   const q = question.toLowerCase();
+
+  // On-topic answers take priority (so "code" in "what code has she written"
+  // still matches skills/projects before the off-topic guard).
   for (const rule of RULES) {
     if (rule.keywords.some((k) => q.includes(k))) return rule.answer();
   }
-  return `Good question — I don't have a quick answer for that one, but Arya would! Email her at ${site.email} or use the contact form below. Meanwhile, feel free to ask about her skills, projects, experience, or education.`;
+
+  // Clearly off-topic → formal refusal.
+  if (OFF_TOPIC.some((k) => q.includes(k))) return REDIRECT;
+
+  // Anything else unrecognised → stay in scope, don't guess.
+  return REDIRECT;
 }

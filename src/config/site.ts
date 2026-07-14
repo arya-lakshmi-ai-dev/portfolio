@@ -59,6 +59,8 @@ export type Certification = {
   year: string;
 };
 
+export type FAQItem = { q: string; a: string };
+
 export const site = {
   /* ── Identity ─────────────────────────────────────────────────────────── */
   name: "Arya Lakshmi M",
@@ -68,7 +70,7 @@ export const site = {
   email: "aryalakshmi.dev@gmail.com",
 
   /* Used for <title>, meta tags, OG. */
-  url: "https://www.aryalakshmi.tech",
+  url: "https://www.aryalakshmi.me",
   description:
     "AI Engineer & Full-Stack Developer building end-to-end GenAI systems — LLM pipelines, agent workflows, and RAG-based knowledge systems.",
 
@@ -228,6 +230,53 @@ export const site = {
     { name: "Joy of Computing using Python", issuer: "NPTEL", year: "2024" },
     { name: "Networking Basics", issuer: "Cisco Networking Academy", year: "2024" },
   ] satisfies Certification[],
+
+  /* ── Recruiter FAQ ────────────────────────────────────────────────────────
+     The AI answers from these too. Drafted where possible; anything marked
+     TODO only YOU can confirm — edit the answer and remove the TODO. */
+  faq: [
+    {
+      q: "What roles is Arya looking for / open to?",
+      a: "AI Engineer, GenAI Engineer, or Software Engineer (SDE) roles — ideally building LLM, agent, and RAG systems end to end. She's comfortable across the full stack (FastAPI + React).",
+    },
+    {
+      q: "Is Arya available / open to new opportunities?",
+      a: "Yes, she is open to opportunities. She's completing her B.Tech (CSBS, graduating 2026) and is currently an AI Engineer Intern at Just Move In.",
+      // TODO: confirm — e.g. "available for full-time from July 2026"
+    },
+    {
+      q: "What is her notice period / when can she start?",
+      a: "Please reach out by email to discuss start dates — she'll share specifics directly.", // TODO: replace with your real answer
+    },
+    {
+      q: "Is she open to remote work or relocation?",
+      a: "She currently works remotely and is open to remote roles. For relocation, please discuss directly by email.", // TODO: confirm relocation preference
+    },
+    {
+      q: "What are Arya's key strengths?",
+      a: "Building production GenAI end to end — LLM pipelines, multi-agent workflows (CrewAI, LangGraph, MCP), and RAG with reranking and citations — plus a full-stack background to ship and deploy what she builds. She's a fast, ship-first learner.",
+    },
+    {
+      q: "Why should we hire Arya?",
+      a: "She already ships real AI features in production at Just Move In (guardrails, GDPR alerting, evaluation suites, observability) while still an undergraduate — combining hands-on GenAI depth with full-stack delivery and a strong ship-first mindset.",
+    },
+    {
+      q: "What is she currently working on?",
+      a: "As an AI Engineer Intern at Just Move In, she builds features for Jay, a production AI moving assistant — a Pydantic AI multi-agent system with FastAPI, Redis, and Supabase/pgvector RAG.",
+    },
+    {
+      q: "What's her strongest technical area?",
+      a: "Applied Generative AI: RAG systems (semantic search, reranking, citation-based answers) and agentic workflows, backed by Python/FastAPI and a solid full-stack foundation.",
+    },
+    {
+      q: "Does she have professional / production experience?",
+      a: "Yes — production AI work at Just Move In, LLM agent workflows at Adya AI, and full-stack + WordPress development at unoiatech. See the Experience section for details.",
+    },
+    {
+      q: "How can I contact Arya?",
+      a: `The best way is email (${"aryalakshmi.dev@gmail.com"}), or via LinkedIn. You can also use the contact form on this page.`,
+    },
+  ] satisfies FAQItem[],
 
   /* ── Social / contact links ───────────────────────────────────────────── */
   socials: [
