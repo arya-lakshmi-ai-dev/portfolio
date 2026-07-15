@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ArrowRight, Download, Loader2 } from "lucide-react";
+import { ArrowRight, FileText, Loader2 } from "lucide-react";
 import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 
 import { site } from "@/config/site";
@@ -200,14 +200,11 @@ export function Hero() {
                 </Button>
               </Magnetic>
               {site.hero.resumeUrl ? (
-                <a
-                  href={site.hero.resumeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-primary"
-                >
-                  <Download className="size-4" /> Résumé
-                </a>
+                <Magnetic>
+                  <Button data-open-resume size="lg" variant="outline">
+                    <FileText className="size-4" /> View résumé
+                  </Button>
+                </Magnetic>
               ) : null}
               <SocialLinks className="-ml-2" />
             </motion.div>

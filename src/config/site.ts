@@ -138,8 +138,7 @@ export const site = {
       description:
         "An AI-powered creative assistant built on the PERN stack, integrated with OpenAI and ClipDrop APIs for generating articles, titles, and images. Features dynamic content generation, image editing, and subscription-based access.",
       tech: ["React.js", "Node.js", "Express.js", "PostgreSQL (Neon)", "OpenAI API", "ClipDrop", "Vercel"],
-      liveUrl: "#", // TODO: live demo URL
-      repoUrl: "#", // TODO: GitHub repo URL
+      liveUrl: "https://quick-ai-sigma-six.vercel.app",
       badge: "Live",
       featured: true,
     },
@@ -149,7 +148,7 @@ export const site = {
       description:
         "A production-grade knowledge assistant that lets users query PDFs, documents, and web content via advanced Retrieval-Augmented Generation. Implements semantic search, reranking, citation-based answers, and hallucination control for accurate responses.",
       tech: ["FastAPI", "LangChain", "FAISS", "Sentence Transformers", "Llama / OpenAI"],
-      repoUrl: "#", // TODO: GitHub repo URL
+      repoUrl: "https://github.com/22CB006/AI-Knowledge-Copilot",
       badge: "RAG",
       featured: true,
     },
@@ -159,7 +158,7 @@ export const site = {
       description:
         "A multi-agent AI system that simulates a startup team — coordinating Product, Engineering, and Market Research agents to analyze ideas and produce structured business outputs. Enables parallel task execution, role-based reasoning, and agent collaboration.",
       tech: ["Python", "CrewAI", "LangChain", "FastAPI", "OpenAI"],
-      repoUrl: "#", // TODO: GitHub repo URL
+      // repoUrl / liveUrl: add when the repo or demo is public.
       badge: "Agents",
       featured: true,
     },
@@ -299,7 +298,7 @@ export const site = {
 
   /* ── Social / contact links ───────────────────────────────────────────── */
   socials: [
-    { label: "GitHub", href: "https://github.com/arya-lakshmi-ai-dev", icon: "github" },
+    { label: "GitHub", href: "https://github.com/22CB006", icon: "github" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/aryalakshmi/", icon: "linkedin" },
     { label: "Medium", href: "https://medium.com/@aryalakshmisece", icon: "medium" },
     { label: "Email", href: "mailto:aryalakshmi.dev@gmail.com", icon: "mail" },

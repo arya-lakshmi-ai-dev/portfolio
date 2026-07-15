@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Menu, X } from "lucide-react";
+import { FileText, Menu, X } from "lucide-react";
 
 import { navItems, site } from "@/config/site";
 import { Button } from "@/components/ui/button";
@@ -62,6 +62,16 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          {site.hero.resumeUrl ? (
+            <Button
+              data-open-resume
+              size="sm"
+              variant="ghost"
+              className="hidden rounded-full md:inline-flex"
+            >
+              <FileText className="size-4" /> Résumé
+            </Button>
+          ) : null}
           <Button
             asChild
             size="sm"
@@ -97,6 +107,16 @@ export function SiteHeader() {
                 {item.label}
               </a>
             ))}
+            {site.hero.resumeUrl ? (
+              <Button
+                data-open-resume
+                variant="outline"
+                className="mt-2 rounded-full"
+                onClick={() => setOpen(false)}
+              >
+                <FileText className="size-4" /> Résumé
+              </Button>
+            ) : null}
             <Button asChild className="mt-2 rounded-full">
               <a href="#contact" onClick={() => setOpen(false)}>
                 Let&apos;s talk

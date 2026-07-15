@@ -1,8 +1,8 @@
-# aryalakshmi.tech
+# aryalakshmi.me
 
 Personal portfolio of **Arya Lakshmi M — AI Engineer & Full-Stack Developer**.
 
-**Live:** https://www.aryalakshmi.tech
+**Live:** https://www.aryalakshmi.me
 
 Built with **Next.js 15 (App Router) · TypeScript · Tailwind CSS · Framer Motion**, in a
 warm editorial style (porcelain + deep plum, Fraunces display serif) — with an AI

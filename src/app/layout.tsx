@@ -3,6 +3,7 @@ import { DM_Sans, JetBrains_Mono } from "next/font/google";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { site } from "@/config/site";
+import { personJsonLd } from "@/lib/structured-data";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
     template: `%s — ${site.name}`,
   },
   description: site.description,
+  alternates: { canonical: site.url },
   keywords: [
     "AI Engineer",
     "Full-Stack Developer",
@@ -69,6 +71,10 @@ export default function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&display=swap"
           rel="stylesheet"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd()) }}
         />
       </head>
       <body

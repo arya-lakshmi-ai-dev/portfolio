@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { AskAI } from "@/components/chat/ask-ai";
+import { ResumeViewer } from "@/components/resume/resume-viewer";
 import { ScrollProgress } from "@/components/effects/scroll-progress";
 import { Hero } from "@/components/sections/hero";
 import { MarqueeStrip } from "@/components/sections/marquee-strip";
@@ -26,6 +27,7 @@ export default function Home() {
       </main>
       <SiteFooter />
       <AskAI />
+      <ResumeViewer />
     </>
   );
 }

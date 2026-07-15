@@ -97,7 +97,7 @@ export default function OpengraphImage() {
             {site.role.toUpperCase()}
           </div>
           <div style={{ fontSize: 24, color: "#6B5F66" }}>
-            aryalakshmi.tech · ask my AI anything
+            aryalakshmi.me · ask my AI anything
           </div>
         </div>
       </div>

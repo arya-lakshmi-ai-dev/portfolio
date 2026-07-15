@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         access_key: accessKey,
         subject: `Portfolio contact from ${name}`,
-        from_name: "aryalakshmi.tech",
+        from_name: "aryalakshmi.me",
         name,
         email,
         message,

@@ -58,9 +58,9 @@ const RULES: Rule[] = [
       `Arya is completing a B.Tech in Computer Science & Business Systems (CSBS) at Sri Eshwar College of Engineering, class of 2026, with a CGPA of 8.02. Certifications include ServiceNow CSA, Infosys Full Stack Web Development, NPTEL Python, and Cisco Networking Basics.`,
   },
   {
-    keywords: ["contact", "email", "reach", "hire", "connect", "linkedin", "github", "medium", "talk"],
+    keywords: ["contact", "email", "reach", "connect", "linkedin", "github", "medium", "talk"],
     answer: () =>
-      `The fastest way to reach Arya is email: ${site.email}. She's also on LinkedIn (linkedin.com/in/aryalakshmi), GitHub (github.com/arya-lakshmi-ai-dev) and Medium (@aryalakshmisece) — or use the contact form at the bottom of this page.`,
+      `The fastest way to reach Arya is email: ${site.email}. She's also on LinkedIn (linkedin.com/in/aryalakshmi), GitHub (github.com/22CB006) and Medium (@aryalakshmisece) — or use the contact form at the bottom of this page.`,
   },
   {
     keywords: ["resume", "cv", "résumé"],
