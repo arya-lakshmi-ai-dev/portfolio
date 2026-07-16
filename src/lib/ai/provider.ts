@@ -11,8 +11,10 @@
 export type ChatRole = "user" | "assistant";
 export type ChatMessage = { role: ChatRole; content: string };
 
-/** Override via env to bump models without a code change. */
-const MODEL = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+/** Override via env to bump models without a code change.
+ *  `gemini-flash-latest` is an alias that always tracks the current stable
+ *  Flash model — so it won't 404 when Google retires a dated version. */
+const MODEL = process.env.GEMINI_MODEL ?? "gemini-flash-latest";
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
 export class MissingApiKeyError extends Error {
