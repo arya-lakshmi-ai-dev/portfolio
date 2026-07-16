@@ -38,6 +38,8 @@ export function Hero() {
   const [value, setValue] = React.useState("");
   const [userMode, setUserMode] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  // Short per-session id so the owner can group a visitor's messages in Slack.
+  const sessionId = React.useRef(Math.random().toString(36).slice(2, 8));
 
   // Displayed message (demo OR the user's real turn).
   const [q, setQ] = React.useState(DEMO[0].q);
@@ -105,6 +107,8 @@ export function Hero() {
         headers: {
           "Content-Type": "application/json",
           "x-visitor-referrer": document.referrer,
+          "x-visitor-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
+          "x-visitor-session": sessionId.current,
         },
         body: JSON.stringify({ messages: [{ role: "user", content: trimmed }] }),
       });

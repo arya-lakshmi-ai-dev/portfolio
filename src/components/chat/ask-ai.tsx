@@ -29,6 +29,8 @@ export function AskAI() {
   const [loading, setLoading] = React.useState(false);
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const sendRef = React.useRef<(t: string) => void>(() => {});
+  // Short per-session id so the owner can group a visitor's messages in Slack.
+  const sessionId = React.useRef(Math.random().toString(36).slice(2, 8));
 
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
@@ -76,6 +78,8 @@ export function AskAI() {
         headers: {
           "Content-Type": "application/json",
           "x-visitor-referrer": document.referrer,
+          "x-visitor-tz": Intl.DateTimeFormat().resolvedOptions().timeZone,
+          "x-visitor-session": sessionId.current,
         },
         // Send the real turns only (skip the local greeting).
         body: JSON.stringify({

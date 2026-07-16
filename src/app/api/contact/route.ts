@@ -1,4 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
+
+import { postToSlack, referrerLabel } from "@/lib/notify";
 
 export const runtime = "nodejs";
 
@@ -32,6 +34,18 @@ export async function POST(req: NextRequest) {
   if (!name || !email || !message || !email.includes("@")) {
     return NextResponse.json({ ok: false, reason: "invalid" }, { status: 400 });
   }
+
+  // Notify Slack of the lead — real name + email. Fires whether or not
+  // Web3Forms email is configured, so no submission is ever missed.
+  const referrer = req.headers.get("x-visitor-referrer");
+  after(() =>
+    postToSlack(
+      `📬 *New contact form submission*  ·  🔗 from ${referrerLabel(referrer)}\n` +
+        `*Name:* ${name}\n` +
+        `*Email:* ${email}\n` +
+        `*Message:* ${message.slice(0, 1500)}`
+    )
+  );
 
   const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
   if (!accessKey) {

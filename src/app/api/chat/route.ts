@@ -10,6 +10,7 @@ import {
   type ChatMessage,
   type ChatRole,
 } from "@/lib/ai/provider";
+import { postToSlack, deviceInfo, referrerLabel } from "@/lib/notify";
 import { site } from "@/config/site";
 
 export const runtime = "nodejs";
@@ -37,6 +38,10 @@ type ChatMeta = {
   city?: string;
   region?: string;
   referrer?: string;
+  device: string;
+  browser: string;
+  timezone?: string;
+  session?: string;
 };
 
 /** "Chennai, TN, IN" — or "unknown location" if Vercel geo isn't present (e.g. localhost). */
@@ -45,41 +50,42 @@ function locationLabel({ city, region, country }: ChatMeta): string {
   return parts.length ? parts.join(", ") : "unknown location";
 }
 
-/** "linkedin.com" / "google.com" — or "direct / unknown" if there's no referrer. */
-function referrerLabel(referrer?: string): string {
-  if (!referrer) return "direct / unknown";
-  try {
-    return new URL(referrer).hostname.replace(/^www\./, "");
-  } catch {
-    return "unknown";
-  }
+/**
+ * Build + send the Slack notification for a chat turn. Includes the visitor's
+ * question, the AI's answer, and best-effort context (rough geo, referrer,
+ * device/browser, timezone, session tag). Context only — never personal identity.
+ */
+async function notifyChat(question: string, answer: string, meta: ChatMeta) {
+  const session = meta.session ? ` · 🧵 \`${meta.session}\`` : "";
+  const followUp =
+    meta.priorTurns > 0 ? ` _(follow-up · ${meta.priorTurns} earlier)_` : "";
+  const tz = meta.timezone ? ` · 🕐 ${meta.timezone}` : "";
+  const reply = answer.trim() || "_(no answer captured)_";
+
+  await postToSlack(
+    `💬 *New chat on your portfolio*${session}${followUp}\n` +
+      `*Q:* ${question.slice(0, 800)}\n` +
+      `*A:* ${reply.slice(0, 1500)}\n` +
+      `📍 ${locationLabel(meta)}  ·  🔗 from ${referrerLabel(meta.referrer)}  ·  ` +
+      `💻 ${meta.device} / ${meta.browser}${tz}`
+  );
 }
 
-/**
- * Fire a Slack notification for a new visitor question. Runs via `after()` so
- * it never blocks or slows the chat reply. No-ops if SLACK_WEBHOOK_URL is unset.
- * The Slack channel doubles as the owner's chat-history log. Includes rough geo
- * (Vercel IP headers) + arrival referrer — context only, never personal identity.
- */
-async function notifySlack(question: string, meta: ChatMeta) {
-  const url = process.env.SLACK_WEBHOOK_URL;
-  if (!url) return;
-  const followUp =
-    meta.priorTurns > 0 ? ` _(follow-up · ${meta.priorTurns} earlier msgs)_` : "";
-  try {
-    await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        text:
-          `💬 *New chat on your portfolio*${followUp}\n` +
-          `> ${question.slice(0, 800)}\n` +
-          `📍 ${locationLabel(meta)}  ·  🔗 from ${referrerLabel(meta.referrer)}`,
-      }),
-    });
-  } catch (err) {
-    console.error("[api/chat] slack notify failed:", err);
-  }
+function buildMeta(req: NextRequest, priorTurns: number): ChatMeta {
+  const geoCity = req.headers.get("x-vercel-ip-city");
+  const { device, browser } = deviceInfo(req.headers.get("user-agent"));
+  return {
+    priorTurns,
+    country: req.headers.get("x-vercel-ip-country") ?? undefined,
+    city: geoCity ? decodeURIComponent(geoCity) : undefined,
+    region: req.headers.get("x-vercel-ip-country-region") ?? undefined,
+    // These three are sent by the client — the API's own headers can't reveal them.
+    referrer: req.headers.get("x-visitor-referrer") ?? undefined,
+    timezone: req.headers.get("x-visitor-tz") ?? undefined,
+    session: req.headers.get("x-visitor-session") ?? undefined,
+    device,
+    browser,
+  };
 }
 
 function isValidMessage(m: unknown): m is ChatMessage {
@@ -118,38 +124,46 @@ export async function POST(req: NextRequest) {
   const lastUserMessage =
     [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
 
-  // Notify Slack of the new question (non-blocking; the channel is the history log).
-  if (lastUserMessage) {
-    const geoCity = req.headers.get("x-vercel-ip-city");
-    const meta: ChatMeta = {
-      priorTurns: messages.filter((m) => m.role === "user").length - 1,
-      country: req.headers.get("x-vercel-ip-country") ?? undefined,
-      city: geoCity ? decodeURIComponent(geoCity) : undefined,
-      region: req.headers.get("x-vercel-ip-country-region") ?? undefined,
-      // Sent by the client (document.referrer) — the API's own referer is just this page.
-      referrer: req.headers.get("x-visitor-referrer") ?? undefined,
-    };
-    after(() => notifySlack(lastUserMessage, meta));
-  }
+  const meta = buildMeta(
+    req,
+    messages.filter((m) => m.role === "user").length - 1
+  );
 
   // No key configured → answer from the offline knowledge base.
   if (!hasApiKey()) {
-    return textStream(fallbackAnswer(lastUserMessage));
+    const answer = fallbackAnswer(lastUserMessage);
+    if (lastUserMessage) {
+      after(() => notifyChat(lastUserMessage, answer, meta));
+    }
+    return textStream(answer);
   }
 
   const system = buildSystemPrompt();
+
+  // The full answer is accumulated as we stream, then sent to Slack afterwards.
+  let fullAnswer = "";
 
   // Resilience chain: Gemini → Groq (if configured) → hardcoded answers.
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const encoder = new TextEncoder();
+      let closed = false;
       let sentAnything = false;
 
-      const pipe = async (gen: AsyncGenerator<string>) => {
-        for await (const chunk of gen) {
-          sentAnything = true;
-          controller.enqueue(encoder.encode(chunk));
+      // Enqueue + accumulate, tolerating a client that disconnected mid-stream.
+      const send = (text: string) => {
+        if (closed) return;
+        sentAnything = true;
+        fullAnswer += text;
+        try {
+          controller.enqueue(encoder.encode(text));
+        } catch {
+          closed = true; // client hung up — stop pushing, but keep the answer.
         }
+      };
+
+      const pipe = async (gen: AsyncGenerator<string>) => {
+        for await (const chunk of gen) send(chunk);
       };
 
       try {
@@ -158,9 +172,7 @@ export async function POST(req: NextRequest) {
         console.error("[api/chat] gemini failed:", err);
         if (sentAnything) {
           // Mid-stream drop — don't switch voices, just close politely.
-          controller.enqueue(
-            encoder.encode(`\n\n(connection dropped — email ${site.email} for more)`)
-          );
+          send(`\n\n(connection dropped — email ${site.email} for more)`);
         } else {
           // Tier 2: Groq, if a key is configured.
           if (hasGroqKey()) {
@@ -171,15 +183,23 @@ export async function POST(req: NextRequest) {
             }
           }
           // Tier 3: offline keyword answers.
-          if (!sentAnything) {
-            controller.enqueue(encoder.encode(fallbackAnswer(lastUserMessage)));
-          }
+          if (!sentAnything) send(fallbackAnswer(lastUserMessage));
         }
       } finally {
-        controller.close();
+        closed = true;
+        try {
+          controller.close();
+        } catch {
+          /* already closed */
+        }
       }
     },
   });
+
+  // Fires after the response finishes streaming, so `fullAnswer` is complete.
+  if (lastUserMessage) {
+    after(() => notifyChat(lastUserMessage, fullAnswer, meta));
+  }
 
   return new Response(stream, {
     headers: {
