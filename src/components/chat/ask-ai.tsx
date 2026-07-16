@@ -73,7 +73,10 @@ export function AskAI() {
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-visitor-referrer": document.referrer,
+        },
         // Send the real turns only (skip the local greeting).
         body: JSON.stringify({
           messages: next.filter((_, i) => i !== 0),

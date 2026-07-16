@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, after } from "next/server";
 
 import { buildSystemPrompt } from "@/lib/ai/persona";
 import { fallbackAnswer } from "@/lib/ai/fallback";
@@ -29,6 +29,57 @@ function textStream(text: string): Response {
   return new Response(stream, {
     headers: { "Content-Type": "text/plain; charset=utf-8" },
   });
+}
+
+type ChatMeta = {
+  priorTurns: number;
+  country?: string;
+  city?: string;
+  region?: string;
+  referrer?: string;
+};
+
+/** "Chennai, TN, IN" — or "unknown location" if Vercel geo isn't present (e.g. localhost). */
+function locationLabel({ city, region, country }: ChatMeta): string {
+  const parts = [city, region, country].filter(Boolean);
+  return parts.length ? parts.join(", ") : "unknown location";
+}
+
+/** "linkedin.com" / "google.com" — or "direct / unknown" if there's no referrer. */
+function referrerLabel(referrer?: string): string {
+  if (!referrer) return "direct / unknown";
+  try {
+    return new URL(referrer).hostname.replace(/^www\./, "");
+  } catch {
+    return "unknown";
+  }
+}
+
+/**
+ * Fire a Slack notification for a new visitor question. Runs via `after()` so
+ * it never blocks or slows the chat reply. No-ops if SLACK_WEBHOOK_URL is unset.
+ * The Slack channel doubles as the owner's chat-history log. Includes rough geo
+ * (Vercel IP headers) + arrival referrer — context only, never personal identity.
+ */
+async function notifySlack(question: string, meta: ChatMeta) {
+  const url = process.env.SLACK_WEBHOOK_URL;
+  if (!url) return;
+  const followUp =
+    meta.priorTurns > 0 ? ` _(follow-up · ${meta.priorTurns} earlier msgs)_` : "";
+  try {
+    await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text:
+          `💬 *New chat on your portfolio*${followUp}\n` +
+          `> ${question.slice(0, 800)}\n` +
+          `📍 ${locationLabel(meta)}  ·  🔗 from ${referrerLabel(meta.referrer)}`,
+      }),
+    });
+  } catch (err) {
+    console.error("[api/chat] slack notify failed:", err);
+  }
 }
 
 function isValidMessage(m: unknown): m is ChatMessage {
@@ -66,6 +117,20 @@ export async function POST(req: NextRequest) {
 
   const lastUserMessage =
     [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
+
+  // Notify Slack of the new question (non-blocking; the channel is the history log).
+  if (lastUserMessage) {
+    const geoCity = req.headers.get("x-vercel-ip-city");
+    const meta: ChatMeta = {
+      priorTurns: messages.filter((m) => m.role === "user").length - 1,
+      country: req.headers.get("x-vercel-ip-country") ?? undefined,
+      city: geoCity ? decodeURIComponent(geoCity) : undefined,
+      region: req.headers.get("x-vercel-ip-country-region") ?? undefined,
+      // Sent by the client (document.referrer) — the API's own referer is just this page.
+      referrer: req.headers.get("x-visitor-referrer") ?? undefined,
+    };
+    after(() => notifySlack(lastUserMessage, meta));
+  }
 
   // No key configured → answer from the offline knowledge base.
   if (!hasApiKey()) {

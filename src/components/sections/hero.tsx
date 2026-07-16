@@ -102,7 +102,10 @@ export function Hero() {
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-visitor-referrer": document.referrer,
+        },
         body: JSON.stringify({ messages: [{ role: "user", content: trimmed }] }),
       });
       if (!res.body) throw new Error("no stream");
