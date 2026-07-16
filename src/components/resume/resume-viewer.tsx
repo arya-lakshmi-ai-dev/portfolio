@@ -16,6 +16,8 @@ export function ResumeViewer() {
   const reduce = useReducedMotion();
   const [open, setOpen] = React.useState(false);
   const url = site.hero.resumeUrl;
+  // Force a descriptive download filename instead of the raw "resume.pdf".
+  const downloadName = `${site.name.replace(/\s+/g, "_")}_AI_Engineer_Resume.pdf`;
 
   // Open on any [data-open-resume] click.
   React.useEffect(() => {
@@ -88,7 +90,7 @@ export function ResumeViewer() {
               <div className="flex shrink-0 items-center gap-1.5">
                 <a
                   href={url}
-                  download
+                  download={downloadName}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-secondary"
                 >
                   <Download className="size-4" />
