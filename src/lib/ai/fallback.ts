@@ -13,6 +13,17 @@ type Rule = { keywords: string[]; answer: () => string };
 
 const RULES: Rule[] = [
   {
+    // Personal / private details Arya doesn't publish — decline gracefully.
+    // Listed FIRST so "phone"/"address" never fall through to the generic intro.
+    keywords: [
+      "address", "phone", "whatsapp", "mobile number", "phone number",
+      "contact number", "personal number", "where does she live",
+      "where she lives", "home town", "hometown", "date of birth", "age",
+    ],
+    answer: () =>
+      `For privacy, I don't share Arya's personal details like her address or phone number. The best way to reach her is email (${site.email}) or the contact form on this page.`,
+  },
+  {
     keywords: ["rag", "retrieval", "vector", "embedding", "semantic search", "rerank", "knowledge base"],
     answer: () =>
       `Arya has solid production RAG experience. She built the AI Knowledge Copilot — a RAG system with semantic search, reranking, and citation-based answers over PDFs and web content (FastAPI, LangChain, FAISS). At Just Move In she works on RAG features for Jay, a production AI assistant using Supabase/pgvector.`,

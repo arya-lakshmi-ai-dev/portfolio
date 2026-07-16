@@ -32,6 +32,26 @@ export function hasGroqKey(): boolean {
   return Boolean(process.env.GROQ_API_KEY);
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * fetch() that retries transient overload/rate-limit responses (503/429) with a
+ * short backoff. Gemini's free tier returns 503 under load; one or two quick
+ * retries ride most of those out instead of dropping to the offline fallback.
+ */
+async function fetchWithRetry(
+  url: string,
+  init: RequestInit,
+  retries = 2
+): Promise<Response> {
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(url, init);
+    const transient = res.status === 503 || res.status === 429;
+    if (res.ok || !transient || attempt >= retries) return res;
+    await sleep(450 * (attempt + 1)); // 450ms, then 900ms
+  }
+}
+
 /**
  * Streams the model's reply as plain-text chunks (an async iterable of strings).
  * Uses Gemini's SSE endpoint directly via fetch — zero SDK dependencies.
@@ -48,7 +68,7 @@ export async function* streamChat(
     parts: [{ text: m.content }],
   }));
 
-  const res = await fetch(
+  const res = await fetchWithRetry(
     `${API_BASE}/${MODEL}:streamGenerateContent?alt=sse`,
     {
       method: "POST",
