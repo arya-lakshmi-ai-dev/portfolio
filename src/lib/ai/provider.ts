@@ -47,10 +47,13 @@ export async function* streamChat(
   }));
 
   const res = await fetch(
-    `${API_BASE}/${MODEL}:streamGenerateContent?alt=sse&key=${apiKey}`,
+    `${API_BASE}/${MODEL}:streamGenerateContent?alt=sse`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": apiKey,
+      },
       body: JSON.stringify({
         system_instruction: { parts: [{ text: system }] },
         contents,
