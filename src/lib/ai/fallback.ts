@@ -21,7 +21,16 @@ const RULES: Rule[] = [
       "where she lives", "home town", "hometown", "date of birth", "age",
     ],
     answer: () =>
-      `For privacy, I don't share Arya's personal details like her address or phone number. The best way to reach her is email (${site.email}) or the contact form on this page.`,
+      `For privacy, I don't share Arya's personal contact details (phone number, address, etc.). You can reach her by email at ${site.email} or via the contact form on this page.`,
+  },
+  {
+    // Strengths / why-hire — listed before the availability rule so it wins.
+    keywords: [
+      "strength", "why should", "why hire", "why arya", "stand out",
+      "standout", "good fit", "best at", "what makes her", "why you",
+    ],
+    answer: () =>
+      `Arya's core strengths: she builds production GenAI end to end — LLM pipelines, multi-agent workflows (CrewAI, LangGraph, MCP), and RAG with reranking and citations — plus the full-stack skills to ship and deploy what she builds. She already ships real AI features in production at Just Move In while still an undergraduate, with a ship-first mindset and strong ownership across guardrails, evaluations, and observability.`,
   },
   {
     keywords: ["rag", "retrieval", "vector", "embedding", "semantic search", "rerank", "knowledge base"],
@@ -79,9 +88,9 @@ const RULES: Rule[] = [
       `You can download Arya's résumé using the Résumé button in the hero section at the top of this page.`,
   },
   {
-    keywords: ["available", "availability", "open to", "looking for", "notice period", "start", "join", "relocat", "remote", "hire", "why should", "strength", "role", "opportunit"],
+    keywords: ["available", "availability", "open to", "looking for", "notice period", "when can she start", "join", "relocat", "work mode", "onsite", "hybrid", "opportunit"],
     answer: () =>
-      `Arya is open to AI Engineer / GenAI / SDE roles building LLM, agent, and RAG systems. She's completing her B.Tech (CSBS, 2026) and currently interning as an AI Engineer at Just Move In. For availability, start dates, or relocation specifics, please email ${site.email}.`,
+      `Arya is available now for full-time AI Engineer / GenAI / SDE roles building LLM, agent, and RAG systems. She's open to any work mode (remote, hybrid, or onsite) and open to relocation globally. For specifics, please email ${site.email}.`,
   },
   {
     keywords: ["who", "about", "arya", "yourself", "introduce", "intro", "tell me about"],
