@@ -44,10 +44,11 @@ type ChatMeta = {
   session?: string;
 };
 
-/** "Chennai, TN, IN" — or "unknown location" if Vercel geo isn't present (e.g. localhost). */
+/** "≈ Chennai, TN, IN" — IP geo maps the ISP's routing hub, not the visitor's
+ *  real town, so it's marked approximate. "unknown location" off-Vercel. */
 function locationLabel({ city, region, country }: ChatMeta): string {
   const parts = [city, region, country].filter(Boolean);
-  return parts.length ? parts.join(", ") : "unknown location";
+  return parts.length ? `≈ ${parts.join(", ")} (approx)` : "unknown location";
 }
 
 /**
