@@ -80,7 +80,7 @@ const RULES: Rule[] = [
   {
     keywords: ["contact", "email", "reach", "connect", "linkedin", "github", "medium", "talk"],
     answer: () =>
-      `The fastest way to reach Arya is email: ${site.email}. She's also on LinkedIn (linkedin.com/in/aryalakshmi), GitHub (github.com/22CB006) and Medium (@aryalakshmisece) — or use the contact form at the bottom of this page.`,
+      `The fastest way to reach Arya is email: ${site.email}. She's also on LinkedIn (linkedin.com/in/aryalakshmi), GitHub (github.com/arya-lakshmi-ai-dev) and Medium (@aryalakshmisece) — or use the contact form at the bottom of this page.`,
   },
   {
     keywords: ["resume", "cv", "résumé"],

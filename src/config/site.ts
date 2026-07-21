@@ -298,7 +298,7 @@ export const site = {
 
   /* ── Social / contact links ───────────────────────────────────────────── */
   socials: [
-    { label: "GitHub", href: "https://github.com/22CB006", icon: "github" },
+    { label: "GitHub", href: "https://github.com/arya-lakshmi-ai-dev", icon: "github" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/aryalakshmi/", icon: "linkedin" },
     { label: "Medium", href: "https://medium.com/@aryalakshmisece", icon: "medium" },
     { label: "Email", href: "mailto:aryalakshmi.dev@gmail.com", icon: "mail" },
