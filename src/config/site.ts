@@ -2,7 +2,7 @@
  * ────────────────────────────────────────────────────────────────────────────
  *  SITE CONTENT — single source of truth for the whole portfolio.
  *  Edit THIS file to update text, links, projects, skills, etc.
- *  Everything marked `TODO:` is a placeholder you should replace.
+ *  Editing it updates the page AND the AI assistant together.
  * ────────────────────────────────────────────────────────────────────────────
  */
 
@@ -84,7 +84,7 @@ export const site = {
     // Small status pill in the hero. Set to null to hide.
     availability: "Open to AI Engineering roles",
     // Path to your résumé PDF (place it in /public). Set to null to hide the button.
-    resumeUrl: "/resume.pdf", // TODO: drop your resume PDF in /public
+    resumeUrl: "/resume.pdf",
   },
 
   /* ── About ────────────────────────────────────────────────────────────── */
@@ -148,7 +148,7 @@ export const site = {
       description:
         "A production-grade knowledge assistant that lets users query PDFs, documents, and web content via advanced Retrieval-Augmented Generation. Implements semantic search, reranking, citation-based answers, and hallucination control for accurate responses.",
       tech: ["FastAPI", "LangChain", "FAISS", "Sentence Transformers", "Llama / OpenAI"],
-      repoUrl: "https://github.com/22CB006/AI-Knowledge-Copilot",
+      repoUrl: "https://github.com/arya-lakshmi-ai-dev/AI-Knowledge-Copilot",
       badge: "RAG",
       featured: true,
     },
