@@ -2,18 +2,21 @@
  * Post a message to Slack via an Incoming Webhook. Shared by the chat and
  * contact-form routes. No-ops when SLACK_WEBHOOK_URL is unset, and never throws
  * (failures are logged, not propagated) so notifications can't break a request.
+ * Returns true if the message was successfully delivered to Slack.
  */
-export async function postToSlack(text: string): Promise<void> {
+export async function postToSlack(text: string): Promise<boolean> {
   const url = process.env.SLACK_WEBHOOK_URL;
-  if (!url) return;
+  if (!url) return false;
   try {
-    await fetch(url, {
+    const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
     });
+    return res.ok;
   } catch (err) {
     console.error("[slack] notify failed:", err);
+    return false;
   }
 }
 

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse, after } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { postToSlack, referrerLabel } from "@/lib/notify";
 
@@ -35,41 +35,42 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, reason: "invalid" }, { status: 400 });
   }
 
-  // Notify Slack of the lead — real name + email. Fires whether or not
-  // Web3Forms email is configured, so no submission is ever missed.
+  // Capture the lead in Slack (awaited so we know it landed). This is the
+  // guaranteed inbox — if it succeeds, the submission is NOT lost.
   const referrer = req.headers.get("x-visitor-referrer");
-  after(() =>
-    postToSlack(
-      `📬 *New contact form submission*  ·  🔗 from ${referrerLabel(referrer)}\n` +
-        `*Name:* ${name}\n` +
-        `*Email:* ${email}\n` +
-        `*Message:* ${message.slice(0, 1500)}`
-    )
+  const slackOk = await postToSlack(
+    `📬 *New contact form submission*  ·  🔗 from ${referrerLabel(referrer)}\n` +
+      `*Name:* ${name}\n` +
+      `*Email:* ${email}\n` +
+      `*Message:* ${message.slice(0, 1500)}`
   );
 
+  // Also email it via Web3Forms (bonus channel). Failure here is fine as long
+  // as Slack captured the lead.
+  let emailOk = false;
   const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
-  if (!accessKey) {
-    return NextResponse.json({ ok: false, reason: "unconfigured" });
+  if (accessKey) {
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: accessKey,
+          subject: `Portfolio contact from ${name}`,
+          from_name: "aryalakshmi.me",
+          name,
+          email,
+          message,
+        }),
+      });
+      const data = (await res.json()) as { success?: boolean };
+      emailOk = data.success === true;
+    } catch (err) {
+      console.error("[api/contact] web3forms failed:", err);
+    }
   }
 
-  try {
-    const res = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        access_key: accessKey,
-        subject: `Portfolio contact from ${name}`,
-        from_name: "aryalakshmi.me",
-        name,
-        email,
-        message,
-      }),
-    });
-    const data = (await res.json()) as { success?: boolean };
-    if (!data.success) throw new Error("web3forms rejected");
-    return NextResponse.json({ ok: true });
-  } catch (err) {
-    console.error("[api/contact] send failed:", err);
-    return NextResponse.json({ ok: false, reason: "send_failed" }, { status: 502 });
-  }
+  // Success as long as the lead reached Arya through at least one channel.
+  if (slackOk || emailOk) return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: false, reason: "send_failed" }, { status: 502 });
 }
